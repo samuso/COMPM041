@@ -14,6 +14,7 @@ from statsmodels.formula.api import ols
 # Analysis of Variance (ANOVA) on linear models
 from statsmodels.stats.anova import anova_lm
 from sklearn.linear_model import LogisticRegression
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 def get_data(file_path, col_indexes, limit=-1):
 	data = []
@@ -46,35 +47,44 @@ def get_data(file_path, col_indexes, limit=-1):
 
 indexes = [15,16,19,21]
 variables, Y = get_data('train_10percent.csv', indexes)
-price_paid = Y
-data = pandas.DataFrame({'x1': variables[0], 'x2' : variables[1], 'x3' : variables[2], 'y': Y})
-model_price = ols("y ~ x1 + x2 + x3", data).fit()
-a = model_price.predict(data)
+# price_paid = Y
+# data = pandas.DataFrame({'x1': variables[0], 'x2' : variables[1], 'x3' : variables[2], 'y': Y})
+# model_price = ols("y ~ x1 + x2 + x3", data).fit()
+# a = model_price.predict(data)
 
-indexes = [15,16,19,0]
-# indexes = [14,15,18,0] # for test
-variables, Y = get_data('train_10percent.csv', indexes)
-data = pandas.DataFrame({'x1': variables[0], 'x2' : variables[1], 'x3' : variables[2], 'y': Y})
-model_clicks = ols("y ~ x1 + x2 + x3", data).fit()
-print model_clicks.summary()
+# indexes = [15,16,19,0]
+# # indexes = [14,15,18,0] # for test
+# variables, Y = get_data('train_10percent.csv', indexes)
+# data = pandas.DataFrame({'x1': variables[0], 'x2' : variables[1], 'x3' : variables[2], 'y': Y})
+# model_clicks = ols("y ~ x1 + x2 + x3", data).fit()
+# print model_clicks.summary()
 
-variables, Y = get_data('train_10percent.csv', indexes)
-data = pandas.DataFrame({'x1': variables[0], 'x2' : variables[1], 'x3' : variables[2], 'y': Y})
-b = model_clicks.predict(data)
+# variables, Y = get_data('train_10percent.csv', indexes)
+# data = pandas.DataFrame({'x1': variables[0], 'x2' : variables[1], 'x3' : variables[2], 'y': Y})
+# b = model_clicks.predict(data)
 
-def get_clicks(Y, list_to_trim):
-	clicks = [i for i in range(len(Y)) if Y[i] == 1]
-	return [list_to_trim[i] for i in clicks]
+# def get_clicks(Y, list_to_trim):
+# 	clicks = [i for i in range(len(Y)) if Y[i] == 1]
+# 	return [list_to_trim[i] for i in clicks]
 
-a = get_clicks(Y,a)
-b = get_clicks(Y,b)
+# a = get_clicks(Y,a)
+# b = get_clicks(Y,b)
 
-final_bids = [a[i]*b[i]*1333 for i in range(len(a))]
-actual_bids = get_clicks(Y,price_paid)
+# final_bids = [a[i]*b[i]*1333 for i in range(len(a))]
+# actual_bids = get_clicks(Y,price_paid)
 
-print len(final_bids)
-print sum([1 for i in range(len(final_bids)) if final_bids[i] > actual_bids[i]])
+# print len(final_bids)
+# print sum([1 for i in range(len(final_bids)) if final_bids[i] > actual_bids[i]])
 
+data = []
+for i in range(len(variables[0])):
+	entry = []
+	for j in range(len(variables)):
+		entry.append(variables[j][i])
+	data.append(entry)
+a = np.array(data)
+for i in range(len(a[0])):
+	print variance_inflation_factor(a,i)
 
 
 
